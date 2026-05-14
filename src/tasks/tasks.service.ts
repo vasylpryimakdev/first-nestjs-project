@@ -9,6 +9,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { CreateTaskLabelDto } from './create-task-label.dto';
 import { TaskLabel } from './task-label.entity';
 import { FindTaskParams } from './find-task.params';
+import { PaginationParams } from 'src/commoon/pagination.params';
 
 @Injectable()
 export class TasksService {
@@ -19,13 +20,46 @@ export class TasksService {
     private readonly labelsRepository: Repository<TaskLabel>,
   ) {}
 
-  public async findAll(filters: FindTaskParams): Promise<Task[]> {
-    return await this.tasksRepository.find({
-      where: {
-        status: filters.status,
-      },
-      relations: ['labels'],
-    });
+  public async findAll(
+    filters: FindTaskParams,
+    pagination: PaginationParams,
+  ): Promise<[Task[], number]> {
+    const query = this.tasksRepository
+      .createQueryBuilder('task')
+      .leftJoinAndSelect('task.labels', 'labels');
+
+    if (filters.status) {
+      query.andWhere('task.status = :status', { status: filters.status });
+    }
+
+    if (filters.search?.trim()) {
+      query.andWhere(
+        '(task.title ILIKE :search OR task.description ILIKE :search)',
+        { search: `%${filters.search}%` },
+      );
+    }
+
+    query.skip(pagination.offset).take(pagination.limit);
+
+    return query.getManyAndCount();
+
+    // const where: FindOptionsWhere<Task> = {};
+
+    // if (filters.status) {
+    //   where.status = filters.status;
+    // }
+
+    // if (filters.search?.trim()) {
+    //   where.title = Like(`%${filters.search}%`);
+    //   where.description = Like(`%${filters.search}%`);
+    // }
+
+    // return await this.tasksRepository.findAndCount({
+    //   where,
+    //   relations: ['labels'],
+    //   skip: pagination.offset,
+    //   take: pagination.limit,
+    // });
   }
 
   public async findOne(id: string): Promise<Task | null> {
