@@ -22,7 +22,6 @@ import { CreateTaskLabelDto } from './create-task-label.dto';
 import { FindTaskParams } from './find-task.params';
 import { PaginationParams } from 'src/commoon/pagination.params';
 import { PaginationResponse } from 'src/commoon/pagination.response';
-import { date } from 'joi';
 
 @Controller('tasks')
 export class TasksController {
