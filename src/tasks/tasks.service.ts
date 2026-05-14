@@ -30,7 +30,9 @@ export class TasksService {
   }
 
   public async createTask(createTaskDto: CreateTaskDto): Promise<Task> {
-    // await this.tasksRepository.create({});
+    if (createTaskDto.labels) {
+      createTaskDto.labels = this.getUniqueLabels(createTaskDto.labels);
+    }
 
     return await this.tasksRepository.save(createTaskDto);
   }
@@ -46,6 +48,10 @@ export class TasksService {
       throw new WrongTaskStatusException();
     }
 
+    if (updateTaskDto.labels) {
+      updateTaskDto.labels = this.getUniqueLabels(updateTaskDto.labels);
+    }
+
     Object.assign(task, updateTaskDto);
 
     return await this.tasksRepository.save(task);
@@ -55,12 +61,33 @@ export class TasksService {
     task: Task,
     labelDtos: CreateTaskLabelDto[],
   ): Promise<Task> {
-    const labels = labelDtos.map((label) =>
-      this.labelsRepository.create(label),
+    const names = new Set(task.labels.map((label) => label.name));
+
+    const labels = this.getUniqueLabels(labelDtos)
+      .filter((dto) => names.has(dto.name))
+      .map((label) => this.labelsRepository.create(label));
+
+    if (labels.length) {
+      task.labels = [...task.labels, ...labels];
+      return await this.tasksRepository.save(task);
+    }
+
+    return task;
+  }
+
+  public async removeLabels(
+    task: Task,
+    labelsToRemove: string[],
+  ): Promise<Task> {
+    task.labels = task.labels.filter(
+      (label) => !labelsToRemove.includes(label.name),
     );
-    task.labels = [...task.labels, ...labels];
 
     return await this.tasksRepository.save(task);
+  }
+
+  public async deleteTask(task: Task): Promise<void> {
+    await this.tasksRepository.remove(task);
   }
 
   private isValidStatusTransition(
@@ -76,7 +103,11 @@ export class TasksService {
     return statusOrder.indexOf(currentStatus) <= statusOrder.indexOf(newStatus);
   }
 
-  public async deleteTask(task: Task): Promise<void> {
-    await this.tasksRepository.delete(task);
+  private getUniqueLabels(
+    labelDtos: CreateTaskLabelDto[],
+  ): CreateTaskLabelDto[] {
+    const uniqueNames = [...new Set(labelDtos.map((label) => label.name))];
+
+    return uniqueNames.map((name) => ({ name }));
   }
 }
