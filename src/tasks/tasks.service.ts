@@ -10,6 +10,7 @@ import { CreateTaskLabelDto } from './create-task-label.dto';
 import { TaskLabel } from './task-label.entity';
 import { FindTaskParams } from './find-task.params';
 import { PaginationParams } from 'src/commoon/pagination.params';
+import { filter } from 'rxjs';
 
 @Injectable()
 export class TasksService {
@@ -53,6 +54,8 @@ export class TasksService {
 
       query.andWhere(`task.id IN ${subQuery}`);
     }
+
+    query.orderBy(`task.${filters.sortBy}`, filters.sortOrder);
 
     query.skip(pagination.offset).take(pagination.limit);
 
