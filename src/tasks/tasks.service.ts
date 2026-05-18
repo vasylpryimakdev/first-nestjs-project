@@ -10,7 +10,6 @@ import { CreateTaskLabelDto } from './create-task-label.dto';
 import { TaskLabel } from './task-label.entity';
 import { FindTaskParams } from './find-task.params';
 import { PaginationParams } from 'src/commoon/pagination.params';
-import { filter } from 'rxjs';
 
 @Injectable()
 export class TasksService {
@@ -24,10 +23,12 @@ export class TasksService {
   public async findAll(
     filters: FindTaskParams,
     pagination: PaginationParams,
+    userId: string,
   ): Promise<[Task[], number]> {
     const query = this.tasksRepository
       .createQueryBuilder('task')
-      .leftJoinAndSelect('task.labels', 'labels');
+      .leftJoinAndSelect('task.labels', 'labels')
+      .where('task.userId = :userId', { userId });
 
     if (filters.status) {
       query.andWhere('task.status = :status', { status: filters.status });
