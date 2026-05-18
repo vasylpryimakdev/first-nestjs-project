@@ -1,98 +1,254 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# TaskFlow
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+A modern task management application built with NestJS, featuring user authentication, role-based access control, and a PostgreSQL database.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## Features
 
-## Description
+- **User Authentication**: Secure JWT-based authentication with password hashing using bcrypt
+- **Role-Based Access Control (RBAC)**: Support for USER and ADMIN roles with role guards
+- **Task Management**: Create, read, update, and delete tasks with status tracking
+  - Task statuses: OPEN, IN_PROGRESS, DONE
+  - Task labels for organization
+- **User-Task Relationships**: Users can manage their own tasks
+- **Database**: PostgreSQL with TypeORM for robust data persistence
+- **Configuration Management**: Environment-based configuration with Joi validation
+- **Docker Support**: Docker Compose for easy PostgreSQL setup
+- **Testing**: Unit and e2e tests with Jest
+- **Code Quality**: ESLint and Prettier for consistent code style
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+## Tech Stack
 
-## Project setup
+- **Framework**: NestJS (Node.js framework)
+- **Language**: TypeScript
+- **Database**: PostgreSQL 16
+- **ORM**: TypeORM
+- **Authentication**: JWT (JSON Web Tokens) with Passport
+- **Password Hashing**: bcrypt
+- **Validation**: class-validator, class-transformer, Joi
+- **Testing**: Jest, Supertest
+- **Code Quality**: ESLint, Prettier
+- **Containerization**: Docker, Docker Compose
 
-```bash
-$ npm install
-```
+## Prerequisites
 
-## Compile and run the project
+- Node.js (v18 or higher)
+- npm or yarn
+- Docker and Docker Compose (for PostgreSQL)
 
-```bash
-# development
-$ npm run start
+## Getting Started
 
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
-```
-
-## Run tests
+### 1. Clone the repository
 
 ```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
+git clone https://github.com/vasylpryimakdev/nest-js-task-flow
+cd nest-js-task-flow
 ```
 
-## Deployment
-
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
-
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+### 2. Install dependencies
 
 ```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
+npm install
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+### 3. Set up environment variables
 
-## Resources
+Create a `.env` file in the root directory with the following variables:
 
-Check out a few resources that may come in handy when working with NestJS:
+```env
+# Database
+DATABASE_HOST=localhost
+DATABASE_PORT=5432
+DATABASE_USERNAME=postgres
+DATABASE_PASSWORD=postgres
+DATABASE_NAME=tasks
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+# JWT
+JWT_SECRET=your-secret-key-here
+JWT_EXPIRES_IN=1d
 
-## Support
+# Application
+PORT=3000
+```
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+### 4. Start PostgreSQL with Docker Compose
 
-## Stay in touch
+```bash
+docker-compose up -d
+```
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+This will start a PostgreSQL container on port 5432.
+
+### 5. Run database migrations
+
+```bash
+npm run migration:run
+```
+
+### 6. Start the application
+
+```bash
+# Development mode with hot reload
+npm run start:dev
+
+# Production mode
+npm run build
+npm run start:prod
+```
+
+The API will be available at `http://localhost:3000`
+
+## API Endpoints
+
+### Authentication
+
+- `POST /auth/register` - Register a new user
+- `POST /auth/login` - Login and receive JWT token
+
+### Tasks
+
+- `GET /tasks` - Get all tasks (requires authentication)
+- `GET /tasks/:id` - Get a specific task by ID
+- `POST /tasks` - Create a new task
+- `PATCH /tasks/:id` - Update a task
+- `DELETE /tasks/:id` - Delete a task
+
+### Users
+
+- `GET /users` - Get all users (admin only)
+- `GET /users/:id` - Get a specific user by ID
+- `PATCH /users/:id` - Update user information
+
+## Project Structure
+
+```bash
+src/
+├── config/           # Configuration files (database, auth, app)
+├── users/            # User module with authentication
+│   ├── auth/         # Authentication service and controller
+│   ├── password/     # Password service
+│   ├── user/         # User service
+│   ├── decorators/   # Custom decorators
+│   ├── user.entity.ts
+│   └── role.enum.ts
+├── tasks/            # Task module
+│   ├── task.entity.ts
+│   ├── task-label.entity.ts
+│   ├── task.model.ts
+│   ├── tasks.controller.ts
+│   └── tasks.service.ts
+├── logger/           # Logging service
+├── dummy/            # Dummy service
+├── message-formatter/ # Message formatting service
+├── app.module.ts
+├── app.controller.ts
+└── main.ts
+```
+
+## Available Scripts
+
+```bash
+# Development
+npm run start              # Start the application
+npm run start:dev          # Start in watch mode
+npm run start:debug        # Start in debug mode
+npm run start:prod         # Start production build
+
+# Building
+npm run build              # Build the application
+
+# Testing
+npm run test               # Run unit tests
+npm run test:e2e           # Run e2e tests
+npm run test:cov           # Run tests with coverage
+npm run test:watch         # Run tests in watch mode
+
+# Code Quality
+npm run lint               # Run ESLint
+npm run format             # Format code with Prettier
+
+# Database
+npm run migration:generate # Generate a new migration
+npm run migration:run       # Run pending migrations
+npm run migration:run:prod # Run migrations in production
+```
+
+## Database Schema
+
+### Users
+
+- `id` (UUID, primary key)
+- `name` (string)
+- `email` (string, unique)
+- `password` (string, hashed)
+- `roles` (array of Role enum)
+- `createdAt` (timestamp)
+- `updatedAt` (timestamp)
+
+### Tasks
+
+- `id` (UUID, primary key)
+- `title` (string)
+- `description` (text)
+- `status` (enum: OPEN, IN_PROGRESS, DONE)
+- `userId` (UUID, foreign key)
+- `user` (relation to User)
+- `labels` (relation to TaskLabel)
+- `createdAt` (timestamp)
+- `updatedAt` (timestamp)
+
+### TaskLabels
+
+- `id` (UUID, primary key)
+- `name` (string)
+- `taskId` (UUID, foreign key)
+- `task` (relation to Task)
+
+## Role-Based Access Control
+
+The application implements role-based access control with two roles:
+
+- **USER**: Can manage their own tasks
+- **ADMIN**: Can manage all users and tasks
+
+Use the `@Roles()` decorator on controller methods to restrict access:
+
+```typescript
+@Roles(Role.ADMIN)
+@Get('admin-only')
+adminOnlyEndpoint() {
+  // Only accessible by admins
+}
+```
+
+## Docker Compose
+
+The project includes a `docker-compose.yml` file for running PostgreSQL:
+
+```yaml
+services:
+  postgres:
+    image: postgres:16
+    container_name: my_postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: tasks
+    ports:
+      - '5432:5432'
+```
+
+## Contributing
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
 
 ## License
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+This project is private and unlicensed.
+
+## Support
+
+For questions and support, please open an issue in the repository.
