@@ -1,14 +1,6 @@
-FROM node:24-alpine AS base
+FROM node:24-alpine AS builder
 
 WORKDIR /usr/src/app
-
-FROM base AS deps
-
-COPY package*.json ./
-
-RUN npm ci --omit=dev
-
-FROM base AS builder
 
 COPY package*.json ./
 
@@ -18,15 +10,15 @@ COPY . .
 
 RUN npm run build
 
-FROM base AS app
+FROM node:24-alpine
 
-ENV NODE_ENV=production
+WORKDIR /usr/src/app
 
-COPY --from=deps /usr/src/app/node_modules ./node_modules
+COPY --from=builder /usr/src/app/package*.json ./
+COPY --from=builder /usr/src/app/node_modules ./node_modules
 COPY --from=builder /usr/src/app/dist ./dist
 
-COPY package*.json ./
-COPY typeorm.config.ts ./
+ENV NODE_ENV=production
 
 EXPOSE 3000
 

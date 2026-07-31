@@ -26,9 +26,7 @@ services:
     restart: unless-stopped
 
   migration:
-    build:
-      context: .
-      dockerfile: Dockerfile
+    build: .
 
     image: taskflow-api:dev
 
@@ -40,7 +38,7 @@ services:
     environment:
       DB_HOST: postgres
 
-    command: npm run migration:run
+    command: npm run migration:run:prod
 
     depends_on:
       postgres:
@@ -49,9 +47,7 @@ services:
     restart: 'no'
 
   api:
-    build:
-      context: .
-      dockerfile: Dockerfile
+    build: .
 
     image: taskflow-api:dev
 
