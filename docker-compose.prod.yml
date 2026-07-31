@@ -2,7 +2,7 @@ name: taskflow_prod
 
 services:
   migration:
-    image: taskflow-api:prod
+    image: ${APP_IMAGE:-taskflow-api:prod}
 
     container_name: taskflow_migration
 
@@ -14,7 +14,7 @@ services:
     restart: 'no'
 
   api:
-    image: taskflow-api:prod
+    image: ${APP_IMAGE:-taskflow-api:prod}
 
     container_name: taskflow_api
 

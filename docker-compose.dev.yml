@@ -28,7 +28,7 @@ services:
   migration:
     build: .
 
-    image: taskflow-api:dev
+    image: ${APP_IMAGE:-taskflow-api:dev}
 
     container_name: taskflow_migration
 
@@ -49,7 +49,7 @@ services:
   api:
     build: .
 
-    image: taskflow-api:dev
+    image: ${APP_IMAGE:-taskflow-api:dev}
 
     container_name: taskflow_api
 

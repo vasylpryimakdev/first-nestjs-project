@@ -1,0 +1,14 @@
+name: Deploy production
+
+on:
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    uses: ./.github/workflows/deploy-reusable.yml
+    with:
+      environment: prod
+      runner_label: prod
+      compose_file: docker-compose.prod.yml
+      image_tag: taskflow-api:prod
+    secrets: inherit
