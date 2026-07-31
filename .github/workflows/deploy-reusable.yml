@@ -1,0 +1,104 @@
+name: Reusable deploy
+
+on:
+  workflow_call:
+    inputs:
+      environment:
+        required: true
+        type: string
+      runner_label:
+        required: true
+        type: string
+      compose_file:
+        required: true
+        type: string
+      image_tag:
+        required: true
+        type: string
+
+jobs:
+  deploy:
+    name: Deploy ${{ inputs.environment }}
+    runs-on: [self-hosted, "${{ inputs.runner_label }}"]
+    environment: ${{ inputs.environment }}
+    env:
+      SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+      SENTRY_ORG: ${{ vars.SENTRY_ORG }}
+      SENTRY_PROJECT: ${{ vars.SENTRY_PROJECT }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run unit tests
+        run: npm test -- --runInBand
+
+      - name: Build application
+        run: npm run build
+
+      - name: Write environment file
+        env:
+          DEPLOY_ENVIRONMENT: ${{ inputs.environment }}
+          APP_IMAGE: ${{ inputs.image_tag }}
+          PORT: ${{ vars.PORT }}
+          APP_MESSAGE_PREFIX: ${{ vars.APP_MESSAGE_PREFIX }}
+          DB_HOST: ${{ vars.DB_HOST }}
+          DB_PORT: ${{ vars.DB_PORT }}
+          DB_USER: ${{ secrets.DB_USER }}
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          DB_DATABASE: ${{ vars.DB_DATABASE }}
+          DB_SYNC: ${{ vars.DB_SYNC }}
+          DB_SSL: ${{ vars.DB_SSL }}
+          JWT_SECRET: ${{ secrets.JWT_SECRET }}
+          JWT_EXPIRES_IN: ${{ vars.JWT_EXPIRES_IN }}
+        run: |
+          if [ "$DEPLOY_ENVIRONMENT" = "prod" ]; then
+            NODE_ENV_VALUE="production"
+          else
+            NODE_ENV_VALUE="development"
+          fi
+
+          {
+            printf 'NODE_ENV=%s\n' "$NODE_ENV_VALUE"
+            printf 'PORT=%s\n' "${PORT:-3000}"
+            printf 'APP_MESSAGE_PREFIX=%s\n' "$APP_MESSAGE_PREFIX"
+            printf 'DB_HOST=%s\n' "$DB_HOST"
+            printf 'DB_PORT=%s\n' "${DB_PORT:-5432}"
+            printf 'DB_USER=%s\n' "$DB_USER"
+            printf 'DB_PASSWORD=%s\n' "$DB_PASSWORD"
+            printf 'DB_DATABASE=%s\n' "$DB_DATABASE"
+            printf 'DB_SYNC=%s\n' "${DB_SYNC:-false}"
+            printf 'DB_SSL=%s\n' "${DB_SSL:-false}"
+            printf 'JWT_SECRET=%s\n' "$JWT_SECRET"
+            printf 'JWT_EXPIRES_IN=%s\n' "${JWT_EXPIRES_IN:-60m}"
+            printf 'APP_IMAGE=%s\n' "$APP_IMAGE"
+          } > .env
+
+      - name: Build Docker image
+        run: docker build --pull -t "${{ inputs.image_tag }}" .
+
+      - name: Deploy with Docker Compose
+        run: docker compose -f "${{ inputs.compose_file }}" up -d --force-recreate --remove-orphans
+
+      - name: Prune unused Docker images
+        run: docker image prune -f
+
+      - name: Create Sentry release
+        if: ${{ env.SENTRY_AUTH_TOKEN != '' && env.SENTRY_ORG != '' && env.SENTRY_PROJECT != '' }}
+        uses: getsentry/action-release@v1
+        env:
+          SENTRY_AUTH_TOKEN: ${{ env.SENTRY_AUTH_TOKEN }}
+          SENTRY_ORG: ${{ env.SENTRY_ORG }}
+          SENTRY_PROJECT: ${{ env.SENTRY_PROJECT }}
+        with:
+          environment: ${{ inputs.environment }}
+          version: ${{ github.sha }}
