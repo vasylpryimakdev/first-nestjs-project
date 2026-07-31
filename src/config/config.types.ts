@@ -21,6 +21,12 @@ export const appConfigSchema = Joi.object({
     .falsy('false')
     .falsy('0')
     .required(),
+  DB_SSL: Joi.boolean()
+    .truthy('true')
+    .truthy('1')
+    .falsy('false')
+    .falsy('0')
+    .default(false),
   JWT_SECRET: Joi.string().required(),
   JWT_EXPIRES_IN: Joi.string().required(),
 });

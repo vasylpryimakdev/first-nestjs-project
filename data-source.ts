@@ -15,6 +15,10 @@ export default new DataSource({
   database: process.env.DB_DATABASE,
 
   synchronize: false,
+  ssl:
+    process.env.DB_SSL === 'true' || process.env.DB_SSL === '1'
+      ? { rejectUnauthorized: false }
+      : false,
 
   entities: [join(__dirname, 'src/**/*.entity.js')],
 

@@ -34,6 +34,7 @@ RDS instance: `taskflow-prod-postgres`
 | Port | `5432` |
 | Database | `tasks` |
 | Master username | `postgres` |
+| SSL | required (`DB_SSL=true`) |
 
 RDS security group: `taskflow-prod-rds-sg` / `sg-0b46563aea2939034`
 
@@ -55,7 +56,7 @@ SSH/Connect to `taskflow-dev`, then run:
 
 ```bash
 cd ~/actions-runner
-./config.sh --url https://github.com/vasylpryimakdev/first-nestjs-project --token YOUR_DEV_TOKEN --name taskflow-dev-runner --labels dev --unattended
+./config.sh --url https://github.com/vasylpryimakdev/nest-js-task-flow --token YOUR_DEV_TOKEN --name taskflow-dev-runner --labels dev --unattended
 sudo ./svc.sh install ubuntu
 sudo ./svc.sh start
 ```
@@ -66,7 +67,7 @@ SSH/Connect to `taskflow-prod`, then run:
 
 ```bash
 cd ~/actions-runner
-./config.sh --url https://github.com/vasylpryimakdev/first-nestjs-project --token YOUR_PROD_TOKEN --name taskflow-prod-runner --labels prod --unattended
+./config.sh --url https://github.com/vasylpryimakdev/nest-js-task-flow --token YOUR_PROD_TOKEN --name taskflow-prod-runner --labels prod --unattended
 sudo ./svc.sh install ubuntu
 sudo ./svc.sh start
 ```
