@@ -11,5 +11,9 @@ export const typeOrmConfig = registerAs(
     password: process.env.DB_PASSWORD,
     database: process.env.DB_DATABASE,
     synchronize: process.env.DB_SYNC === 'true' || process.env.DB_SYNC === '1',
+    ssl:
+      process.env.DB_SSL === 'true' || process.env.DB_SSL === '1'
+        ? { rejectUnauthorized: false }
+        : false,
   }),
 );
