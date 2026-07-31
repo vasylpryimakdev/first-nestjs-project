@@ -57,6 +57,7 @@ jobs:
           DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
           DB_DATABASE: ${{ vars.DB_DATABASE }}
           DB_SYNC: ${{ vars.DB_SYNC }}
+          DB_SSL: ${{ vars.DB_SSL }}
           JWT_SECRET: ${{ secrets.JWT_SECRET }}
           JWT_EXPIRES_IN: ${{ vars.JWT_EXPIRES_IN }}
         run: |
@@ -76,6 +77,7 @@ jobs:
             printf 'DB_PASSWORD=%s\n' "$DB_PASSWORD"
             printf 'DB_DATABASE=%s\n' "$DB_DATABASE"
             printf 'DB_SYNC=%s\n' "${DB_SYNC:-false}"
+            printf 'DB_SSL=%s\n' "${DB_SSL:-false}"
             printf 'JWT_SECRET=%s\n' "$JWT_SECRET"
             printf 'JWT_EXPIRES_IN=%s\n' "${JWT_EXPIRES_IN:-60m}"
             printf 'APP_IMAGE=%s\n' "$APP_IMAGE"
@@ -85,7 +87,7 @@ jobs:
         run: docker build --pull -t "${{ inputs.image_tag }}" .
 
       - name: Deploy with Docker Compose
-        run: docker compose -f "${{ inputs.compose_file }}" up -d --remove-orphans
+        run: docker compose -f "${{ inputs.compose_file }}" up -d --force-recreate --remove-orphans
 
       - name: Prune unused Docker images
         run: docker image prune -f
