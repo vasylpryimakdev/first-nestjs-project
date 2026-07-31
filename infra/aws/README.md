@@ -19,6 +19,26 @@ Open inbound ports:
 
 Both instances have Docker, Docker Compose plugin, Git, jq, and a persistent 16GB swap file installed by `ec2-user-data.sh`.
 
+## Production RDS PostgreSQL
+
+RDS instance: `taskflow-prod-postgres`
+
+| Setting | Value |
+| --- | --- |
+| Engine | PostgreSQL 18.3 |
+| Instance class | `db.t4g.micro` |
+| Storage | 20GB `gp2` |
+| Public access | `false` |
+| Deletion protection | `true` |
+| Endpoint | `taskflow-prod-postgres.cotisaaa8xxt.us-east-1.rds.amazonaws.com` |
+| Port | `5432` |
+| Database | `tasks` |
+| Master username | `postgres` |
+
+RDS security group: `taskflow-prod-rds-sg` / `sg-0b46563aea2939034`
+
+Inbound database access is allowed only from the EC2 security group `sg-0c0e55914c607d87b`.
+
 ## GitHub Self-Hosted Runner Registration
 
 Runner binaries are already downloaded to `~/actions-runner` on both EC2 instances.
@@ -54,3 +74,5 @@ sudo ./svc.sh start
 ## Cost Note
 
 The AWS account rejected `t3.xlarge` because non-free-tier instance types are blocked. The current instances are `t3.micro` with 16GB swap as a budget-safe fallback. For strict compliance with the 12GB RAM requirement, upgrade both instances to `t3.xlarge` after removing the AWS free-tier-only restriction.
+
+RDS was created as `db.t4g.micro` with 20GB storage and 1-day backup retention because this account also enforces free-tier RDS restrictions.
