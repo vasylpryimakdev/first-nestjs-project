@@ -1,0 +1,56 @@
+# AWS Deployment Notes
+
+Region: `us-east-1`
+
+## EC2 Instances
+
+| Environment | Name | Instance ID | Public IP | Public DNS |
+| --- | --- | --- | --- | --- |
+| dev | `taskflow-dev` | `i-0707bd71180e44802` | `44.200.255.16` | `ec2-44-200-255-16.compute-1.amazonaws.com` |
+| prod | `taskflow-prod` | `i-004c5b847b8c0a0df` | `13.218.203.208` | `ec2-13-218-203-208.compute-1.amazonaws.com` |
+
+Security group: `taskflow-ec2-sg` / `sg-0c0e55914c607d87b`
+
+Open inbound ports:
+- `22` from current admin IP only
+- `80` from anywhere
+- `443` from anywhere
+- `3000` from anywhere
+
+Both instances have Docker, Docker Compose plugin, Git, jq, and a persistent 16GB swap file installed by `ec2-user-data.sh`.
+
+## GitHub Self-Hosted Runner Registration
+
+Runner binaries are already downloaded to `~/actions-runner` on both EC2 instances.
+
+In GitHub, open:
+
+`Settings` -> `Actions` -> `Runners` -> `New self-hosted runner` -> `Linux` -> `x64`
+
+Use the generated token in the commands below.
+
+### Dev Runner
+
+SSH/Connect to `taskflow-dev`, then run:
+
+```bash
+cd ~/actions-runner
+./config.sh --url https://github.com/vasylpryimakdev/first-nestjs-project --token YOUR_DEV_TOKEN --name taskflow-dev-runner --labels dev --unattended
+sudo ./svc.sh install ubuntu
+sudo ./svc.sh start
+```
+
+### Prod Runner
+
+SSH/Connect to `taskflow-prod`, then run:
+
+```bash
+cd ~/actions-runner
+./config.sh --url https://github.com/vasylpryimakdev/first-nestjs-project --token YOUR_PROD_TOKEN --name taskflow-prod-runner --labels prod --unattended
+sudo ./svc.sh install ubuntu
+sudo ./svc.sh start
+```
+
+## Cost Note
+
+The AWS account rejected `t3.xlarge` because non-free-tier instance types are blocked. The current instances are `t3.micro` with 16GB swap as a budget-safe fallback. For strict compliance with the 12GB RAM requirement, upgrade both instances to `t3.xlarge` after removing the AWS free-tier-only restriction.
