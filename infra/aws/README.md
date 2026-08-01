@@ -74,6 +74,6 @@ sudo ./svc.sh start
 
 ## Cost Note
 
-The AWS account rejected `t3.xlarge` because non-free-tier instance types are blocked. The current instances are `t3.micro`, which is the practical free-tier-compatible option, with 16GB swap as a budget-safe fallback. For strict compliance with the 12GB RAM requirement, upgrade both instances to `t3.xlarge` or another 12GB+ RAM instance type after removing the AWS free-tier-only restriction.
+The AWS account rejected `t3.xlarge` because non-free-tier instance types are blocked. The current instances are `t3.micro` with 16GB swap as a budget-safe fallback. For strict compliance with the 12GB RAM requirement, upgrade both instances to `t3.xlarge` after removing the AWS free-tier-only restriction.
 
 RDS was created as `db.t4g.micro` with 20GB storage and 1-day backup retention because this account also enforces free-tier RDS restrictions.
