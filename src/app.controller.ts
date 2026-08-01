@@ -1,5 +1,6 @@
 import { Controller, Get } from '@nestjs/common';
 import { AppService } from './app.service';
+import { Public } from './users/decorators/public.decorator';
 
 @Controller()
 export class AppController {
@@ -11,6 +12,7 @@ export class AppController {
   }
 
   @Get('debug-sentry')
+  @Public()
   getSentryDebugError() {
     throw new Error('My first Sentry error!');
   }
