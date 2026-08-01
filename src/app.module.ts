@@ -16,6 +16,7 @@ import { User } from './users/user.entity';
 import { TaskLabel } from './tasks/task-label.entity';
 import { authConfig } from './config/auth.config';
 import { UsersModule } from './users/users.module';
+import { SentryModule } from '@sentry/nestjs/setup';
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import { UsersModule } from './users/users.module';
         abortEarly: true,
       },
     }),
+    SentryModule.forRoot(),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
