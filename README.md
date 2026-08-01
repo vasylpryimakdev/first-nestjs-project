@@ -18,6 +18,7 @@ A modern task management application built with NestJS, featuring user authentic
 
 ## Tech Stack
 
+
 - **Framework**: NestJS (Node.js framework)
 - **Language**: TypeScript
 - **Database**: PostgreSQL 17 / AWS RDS PostgreSQL
