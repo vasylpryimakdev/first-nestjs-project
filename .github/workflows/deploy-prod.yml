@@ -5,6 +5,7 @@ on:
 
 jobs:
   deploy:
+    if: github.ref == 'refs/heads/main'
     uses: ./.github/workflows/deploy-reusable.yml
     with:
       environment: prod
