@@ -21,7 +21,7 @@ A modern task management application built with NestJS, featuring user authentic
 
 - **Framework**: NestJS (Node.js framework)
 - **Language**: TypeScript
-- **Database**: PostgreSQL 16
+- **Database**: PostgreSQL 17 / AWS RDS PostgreSQL
 - **ORM**: TypeORM
 - **Authentication**: JWT (JSON Web Tokens) with Passport
 - **Password Hashing**: bcrypt
@@ -32,7 +32,7 @@ A modern task management application built with NestJS, featuring user authentic
 
 ## Prerequisites
 
-- Node.js (v18 or higher)
+- Node.js 24
 - npm or yarn
 - Docker and Docker Compose (for PostgreSQL)
 
@@ -56,28 +56,28 @@ npm install
 Create a `.env` file in the root directory with the following variables:
 
 ```env
-# Database
-DATABASE_HOST=localhost
-DATABASE_PORT=5432
-DATABASE_USERNAME=postgres
-DATABASE_PASSWORD=postgres
-DATABASE_NAME=tasks
-
-# JWT
-JWT_SECRET=your-secret-key-here
-JWT_EXPIRES_IN=1d
-
-# Application
+APP_MESSAGE_PREFIX=SOME_MESSAGE
 PORT=3000
+
+DB_HOST=localhost
+DB_PORT=5432
+DB_USER=postgres
+DB_PASSWORD=postgres
+DB_DATABASE=tasks
+DB_SYNC=false
+DB_SSL=false
+
+JWT_SECRET=your-secret-key-here
+JWT_EXPIRES_IN=60m
 ```
 
 ### 4. Start PostgreSQL with Docker Compose
 
 ```bash
-docker-compose up -d
+docker compose -f docker-compose.dev.yml up -d postgres
 ```
 
-This will start a PostgreSQL container on port 5432.
+This will start a PostgreSQL container on port 5432 for local/development usage.
 
 ### 5. Run database migrations
 
@@ -223,20 +223,36 @@ adminOnlyEndpoint() {
 
 ## Docker Compose
 
-The project includes a `docker-compose.yml` file for running PostgreSQL:
+The project includes environment-specific Docker Compose files:
+
+- `docker-compose.dev.yml` runs PostgreSQL, migrations, and the API on the same host.
+- `docker-compose.prod.yml` runs migrations and the API, expecting PostgreSQL to be provided externally, for example by AWS RDS.
+
+Example development database service:
 
 ```yaml
 services:
   postgres:
-    image: postgres:16
-    container_name: my_postgres
+    image: postgres:17
+    container_name: taskflow_postgres
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: tasks
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_DATABASE}
     ports:
       - '5432:5432'
 ```
+
+## Deployment
+
+GitHub Actions workflows are configured for two AWS environments:
+
+- `dev` branch pushes deploy to development via `.github/workflows/deploy-dev.yml`.
+- Production deploy is manual from the Actions menu via `.github/workflows/deploy-prod.yml` and is guarded to run only from `main`.
+- Common deployment steps are reused through `.github/workflows/deploy-reusable.yml`.
+- CI runs tests and build on pushes and pull requests to `main` and `dev` via `.github/workflows/ci.yml`.
+
+Deployment uses Docker images built on self-hosted GitHub runners. AWS setup notes are documented in `infra/aws/README.md`.
 
 ## Contributing
 
