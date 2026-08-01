@@ -60,6 +60,11 @@ jobs:
           DB_SSL: ${{ vars.DB_SSL }}
           JWT_SECRET: ${{ secrets.JWT_SECRET }}
           JWT_EXPIRES_IN: ${{ vars.JWT_EXPIRES_IN }}
+          SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
+          SENTRY_ENVIRONMENT: ${{ inputs.environment }}
+          SENTRY_RELEASE: ${{ github.sha }}
+          SENTRY_TRACES_SAMPLE_RATE: ${{ vars.SENTRY_TRACES_SAMPLE_RATE }}
+          SENTRY_PROFILES_SAMPLE_RATE: ${{ vars.SENTRY_PROFILES_SAMPLE_RATE }}
         run: |
           if [ "$DEPLOY_ENVIRONMENT" = "prod" ]; then
             NODE_ENV_VALUE="production"
@@ -80,6 +85,11 @@ jobs:
             printf 'DB_SSL=%s\n' "${DB_SSL:-false}"
             printf 'JWT_SECRET=%s\n' "$JWT_SECRET"
             printf 'JWT_EXPIRES_IN=%s\n' "${JWT_EXPIRES_IN:-60m}"
+            printf 'SENTRY_DSN=%s\n' "$SENTRY_DSN"
+            printf 'SENTRY_ENVIRONMENT=%s\n' "$SENTRY_ENVIRONMENT"
+            printf 'SENTRY_RELEASE=%s\n' "$SENTRY_RELEASE"
+            printf 'SENTRY_TRACES_SAMPLE_RATE=%s\n' "${SENTRY_TRACES_SAMPLE_RATE:-0}"
+            printf 'SENTRY_PROFILES_SAMPLE_RATE=%s\n' "${SENTRY_PROFILES_SAMPLE_RATE:-0}"
             printf 'APP_IMAGE=%s\n' "$APP_IMAGE"
           } > .env
 

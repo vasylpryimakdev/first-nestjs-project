@@ -68,6 +68,12 @@ DB_SSL=false
 
 JWT_SECRET=your-secret-key-here
 JWT_EXPIRES_IN=60m
+
+SENTRY_DSN=
+SENTRY_ENVIRONMENT=development
+SENTRY_RELEASE=
+SENTRY_TRACES_SAMPLE_RATE=0
+SENTRY_PROFILES_SAMPLE_RATE=0
 ```
 
 ### 4. Start PostgreSQL with Docker Compose
@@ -252,6 +258,21 @@ GitHub Actions workflows are configured for two AWS environments:
 - CI runs tests and build on pushes and pull requests to `main` and `dev` via `.github/workflows/ci.yml`.
 
 Deployment uses Docker images built on self-hosted GitHub runners. AWS setup notes are documented in `infra/aws/README.md`.
+
+## Sentry
+
+Runtime error tracking is integrated with Sentry through `@sentry/nestjs`.
+
+Set these GitHub environment values for deployed environments:
+
+- Secret: `SENTRY_DSN`
+- Secret: `SENTRY_AUTH_TOKEN` for creating Sentry releases from GitHub Actions
+- Variable: `SENTRY_ORG`
+- Variable: `SENTRY_PROJECT`
+- Variable: `SENTRY_TRACES_SAMPLE_RATE`, for example `0` or `0.1`
+- Variable: `SENTRY_PROFILES_SAMPLE_RATE`, for example `0` or `0.1`
+
+`SENTRY_ENVIRONMENT` and `SENTRY_RELEASE` are generated during deployment from the target environment and Git commit SHA.
 
 ## Contributing
 
