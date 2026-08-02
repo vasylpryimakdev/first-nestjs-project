@@ -1,4 +1,4 @@
-# TaskFlow
+# Nest AWS Tasks Service
 
 A modern task management application built with NestJS, featuring user authentication, role-based access control, and a PostgreSQL database.
 
