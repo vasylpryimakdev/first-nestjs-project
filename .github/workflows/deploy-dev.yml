@@ -1,17 +1,23 @@
 name: Deploy development
 
 on:
-  push:
+  workflow_run:
+    workflows:
+      - CI
     branches:
       - dev
+    types:
+      - completed
   workflow_dispatch:
 
 jobs:
   deploy:
+    if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
     uses: ./.github/workflows/deploy-reusable.yml
     with:
       environment: dev
       runner_label: dev
       compose_file: docker-compose.dev.yml
       image_tag: taskflow-api:dev
+      ref: ${{ github.event_name == 'workflow_run' && github.event.workflow_run.head_sha || github.sha }}
     secrets: inherit

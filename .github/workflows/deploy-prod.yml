@@ -12,4 +12,5 @@ jobs:
       runner_label: prod
       compose_file: docker-compose.prod.yml
       image_tag: taskflow-api:prod
+      ref: ${{ github.sha }}
     secrets: inherit
