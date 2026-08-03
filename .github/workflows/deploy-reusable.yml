@@ -15,6 +15,9 @@ on:
       image_tag:
         required: true
         type: string
+      ref:
+        required: true
+        type: string
 
 jobs:
   deploy:
@@ -29,21 +32,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
         with:
-          node-version: 24
-          cache: npm
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Run unit tests
-        run: npm test -- --runInBand
-
-      - name: Build application
-        run: npm run build
+          ref: ${{ inputs.ref }}
 
       - name: Write environment file
         env:
@@ -62,7 +52,7 @@ jobs:
           JWT_EXPIRES_IN: ${{ vars.JWT_EXPIRES_IN }}
           SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
           SENTRY_ENVIRONMENT: ${{ inputs.environment }}
-          SENTRY_RELEASE: ${{ github.sha }}
+          SENTRY_RELEASE: ${{ inputs.ref }}
           SENTRY_TRACES_SAMPLE_RATE: ${{ vars.SENTRY_TRACES_SAMPLE_RATE }}
           SENTRY_PROFILES_SAMPLE_RATE: ${{ vars.SENTRY_PROFILES_SAMPLE_RATE }}
         run: |
@@ -111,4 +101,4 @@ jobs:
           SENTRY_PROJECT: ${{ env.SENTRY_PROJECT }}
         with:
           environment: ${{ inputs.environment }}
-          version: ${{ github.sha }}
+          version: ${{ inputs.ref }}
