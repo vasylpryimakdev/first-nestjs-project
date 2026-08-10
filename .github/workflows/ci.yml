@@ -28,5 +28,17 @@ jobs:
       - name: Run unit tests
         run: npm test -- --runInBand
 
+      - name: Start e2e database
+        run: docker compose -p taskflow_e2e -f docker-compose.dev.yml --profile with-test-db up -d --wait test-db
+
+      - name: Run e2e tests
+        env:
+          TEST_DB_PORT: 5433
+        run: npm run test:e2e -- --runInBand
+
+      - name: Stop e2e database
+        if: always()
+        run: docker compose -p taskflow_e2e -f docker-compose.dev.yml --profile with-test-db down --volumes
+
       - name: Build application
         run: npm run build
