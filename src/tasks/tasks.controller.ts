@@ -145,7 +145,7 @@ export class TasksController {
   }
 
   private checkTaskOwnership(task: Task, userId: string): void {
-    if (task.userId === userId) {
+    if (task.userId !== userId) {
       throw new ForbiddenException('You can only access your own tasks');
     }
   }

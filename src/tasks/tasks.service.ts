@@ -88,7 +88,9 @@ export class TasksService {
     });
   }
 
-  public async createTask(createTaskDto: CreateTaskDto): Promise<Task> {
+  public async createTask(
+    createTaskDto: CreateTaskDto & Pick<Task, 'userId'>,
+  ): Promise<Task> {
     if (createTaskDto.labels) {
       createTaskDto.labels = this.getUniqueLabels(createTaskDto.labels);
     }

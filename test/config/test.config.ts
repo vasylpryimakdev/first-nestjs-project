@@ -2,7 +2,7 @@ export const testConfig = {
   database: {
     type: 'postgres',
     host: 'localhost',
-    port: 5432,
+    port: parseInt(process.env.TEST_DB_PORT ?? '5432', 10),
     username: 'postgres',
     password: 'postgres',
     database: 'tasks_e2e',
