@@ -9,6 +9,7 @@ import {
   HttpStatus,
   NotFoundException,
   Param,
+  ParseArrayPipe,
   Patch,
   Post,
   Query,
@@ -108,7 +109,8 @@ export class TasksController {
   @Post(':id/labels')
   async addLabels(
     @Param() { id }: FindOneParams,
-    @Body() labels: CreateTaskLabelDto[],
+    @Body(new ParseArrayPipe({ items: CreateTaskLabelDto }))
+    labels: CreateTaskLabelDto[],
     @CurrentUserId() userId: string,
   ): Promise<Task> {
     const task = await this.findOneOrFail(id);
@@ -122,7 +124,7 @@ export class TasksController {
   @HttpCode(HttpStatus.NO_CONTENT)
   async removeLabels(
     @Param() { id }: FindOneParams,
-    @Body() labelNames: string[],
+    @Body(new ParseArrayPipe({ items: String })) labelNames: string[],
     @CurrentUserId() userId: string,
   ): Promise<void> {
     const task = await this.findOneOrFail(id);
