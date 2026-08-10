@@ -1,4 +1,4 @@
-import * as request from 'supertest';
+import request from 'supertest';
 import { TestSetup } from './utils/test-setup';
 import { AppModule } from 'src/app.module';
 

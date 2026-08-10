@@ -1,5 +1,5 @@
 import { TaskStatus } from './../src/tasks/task.model';
-import * as request from 'supertest';
+import request from 'supertest';
 import { AppModule } from './../src/app.module';
 import { TestSetup } from './utils/test-setup';
 
